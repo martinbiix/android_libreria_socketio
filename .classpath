@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="src" path="gen"/>
-	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
+	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
-	<classpathentry exported="true" kind="lib" path="/home/martin/Documentos/Android Bundle/Librerias/json-org.jar"/>
-	<classpathentry exported="true" kind="lib" path="/home/martin/Documentos/Android Bundle/Librerias/WebSocket.jar"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="gen"/>
+	<classpathentry exported="true" kind="lib" path="/Users/ikharoz/Documents/Backup DD/Proyectos/LapBackup/Android Bundle/Librerias/json-org.jar"/>
+	<classpathentry exported="true" kind="lib" path="/Users/ikharoz/Documents/Backup DD/Proyectos/LapBackup/Android Bundle/Librerias/WebSocket.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

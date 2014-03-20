@@ -13,9 +13,11 @@ import java.net.URL;
 import java.util.Properties;
 
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
 
 import org.json.JSONObject;
+
+import android.media.MediaRouter.Callback;
+import android.util.Log;
 
 /**
  * The Class SocketIO.
@@ -199,11 +201,14 @@ public class SocketIO {
 	 * @return true if connecting has been initiated, false if not
 	 */
 	private boolean setAndConnect(URL url, IOCallback callback) {
-		if(this.connection != null)
+		if(this.connection != null){
+			this.recon=false;
 			throw new RuntimeException("You can connect your SocketIO instance only once. Use a fresh instance instead.");
-		if ((this.url != null && url != null)
-				|| (this.callback != null && callback != null))
+		}			
+		if ((this.url != null && url != null)|| (this.callback != null && callback != null)){
+			this.recon=false;
 			return false;
+		}			
 		if (url != null) {
 			this.url = url;
 		}
@@ -211,13 +216,13 @@ public class SocketIO {
 			this.callback = callback;
 		}
 		if (this.callback != null && this.url != null) {
-			final String origin = this.url.getProtocol() + "://"
-					+ this.url.getAuthority();
+			final String origin = this.url.getProtocol() + "://"+ this.url.getAuthority();
 			this.namespace = this.url.getPath();
 			if (this.namespace.equals("/")) {
 				this.namespace = "";
 			}
 			this.connection = IOConnection.register(origin, this);
+			this.recon=true;
 			return true;
 		}
 		return false;
@@ -331,6 +336,28 @@ public class SocketIO {
 	 */
 	public void reconnect() {
 		this.connection.reconnect();
+	}
+	
+	/**
+	 * Reconectar para Biixa
+	 */
+	private boolean recon=false;
+	public void reconnect_Biixa(String url){
+		//this.connection.handshake2();
+	/*
+		if(!recon){
+			Log.i("SocketIO","Recon... Biixa");
+			try {
+				this.setAndConnect(new URL(url), null);
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}else
+			reconnect_Biixa(url);
+*/		
+		this.connection.reconnectBiixa();
+		
 	}
 
 	/**

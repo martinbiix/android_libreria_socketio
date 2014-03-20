@@ -25,13 +25,15 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
+
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import android.util.Log;
 
 /**
  * The Class IOConnection.
@@ -322,6 +324,40 @@ class IOConnection implements IOCallback {
 			error(new SocketIOException("Error while handshaking", e));
 		}
 	}
+	
+	public void handshake2() {
+		URL url;
+		String response;
+		URLConnection connection;
+		try {
+			setState(STATE_HANDSHAKE);
+			url = new URL(IOConnection.this.url.toString() + SOCKET_IO_1);
+			connection = url.openConnection();
+			if (connection instanceof HttpsURLConnection) {
+				((HttpsURLConnection) connection)
+						.setSSLSocketFactory(sslContext.getSocketFactory());
+			}
+			connection.setConnectTimeout(connectTimeout);
+			connection.setReadTimeout(connectTimeout);
+
+			/* Setting the request headers */
+			for (Entry<Object, Object> entry : headers.entrySet()) {
+				connection.setRequestProperty((String) entry.getKey(),
+						(String) entry.getValue());
+			}
+
+			InputStream stream = connection.getInputStream();
+			Scanner in = new Scanner(stream);
+			response = in.nextLine();
+			String[] data = response.split(":");
+			sessionId = data[0];
+			heartbeatTimeout = Long.parseLong(data[1]) * 1000;
+			closingTimeout = Long.parseLong(data[2]) * 1000;
+			protocols = Arrays.asList(data[3].split(","));
+		} catch (Exception e) {
+			error(new SocketIOException("Error while handshaking", e));
+		}
+	}
 
 	/**
 	 * Connect transport.
@@ -339,6 +375,8 @@ class IOConnection implements IOCallback {
 					"Server supports no available transports. You should reconfigure the server to support a available transport"));
 			return;
 		}
+		//Entro a reconectar
+		Log.i("SocketIO","Reconectando...");
 		transport.connect();
 	}
 
@@ -764,6 +802,22 @@ class IOConnection implements IOCallback {
 			}
 			reconnectTask = new ReconnectTask();
 			backgroundTimer.schedule(reconnectTask, 1000);
+		}
+	}
+	/*
+	 * Forzar una reconexion
+	 */
+	public synchronized void reconnectBiixa() {
+		try{
+			invalidateTransport();
+			setState(STATE_INVALID);
+			if (reconnectTask != null) {
+				reconnectTask.cancel();
+			}
+			reconnectTask = new ReconnectTask();
+			backgroundTimer.schedule(reconnectTask, 1000);	
+		}catch(Exception e){
+			
 		}
 	}
 
